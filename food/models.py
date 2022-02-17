@@ -63,14 +63,47 @@ class TimeRanges(azt_models.AztLocaleModel, models.Model):
         ordering = ['-date_of_update']
 
 
+class Tags(azt_models.AztLocaleModel, models.Model):
+    SPECIAL_M2M_FIELDS = []
+    SPECIAL_O2M_FIELDS = []
+    TRANSLATED_FIELDS = ['name']
+    GENERAL_FIELDS = ['translations']
+
+    id = models.CharField(max_length=8, primary_key=True, unique=True, null=False)
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
+    locale = models.ForeignKey('Locale', on_delete=models.CASCADE, related_name="tags", )
+    translations = models.CharField(max_length=1000, blank=True)
+    date_of_update = models.DateTimeField(auto_now=True)
+    date_of_add = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+
+        self.set_index()
+
+        if not self.id:
+            self.id = azt_functions.set_id()
+        super(Tags, self).save(*args, **kwargs)
+
+        self.set_translations()
+
+    class Meta:
+        verbose_name_plural = "Tags"
+        ordering = ['-date_of_update']
+
+
 class Restaurants(azt_models.AztLocaleModel, models.Model):
+    SPECIAL_M2M_FIELDS = ['tags']
     SPECIAL_O2M_FIELDS = ['time_range']
     TRANSLATED_FIELDS = ['name']
     GENERAL_FIELDS = ['main_image', 'index', 'card_image', 'translations']
 
     id = models.CharField(max_length=8, primary_key=True, unique=True, null=False)
     name = models.CharField(max_length=100, null=False, blank=False, unique=True)
-    slug = models.CharField(max_length=100, null=False, unique=True,)
+    slug = models.CharField(max_length=100, null=False, unique=True, blank=True)
+    tags = models.ManyToManyField(Tags, blank=True, related_name="restaurants")
     main_image = models.ImageField(upload_to="images/restaurants/main/", null=True)
     card_image = models.ImageField(upload_to="images/restaurants/card/", null=True)
     time_range = models.ForeignKey('TimeRanges', on_delete=models.CASCADE, related_name='restaurants', null=False)
@@ -89,6 +122,14 @@ class Restaurants(azt_models.AztLocaleModel, models.Model):
             restaurant = Restaurants.objects.get(id=restaurants[code])
             restaurant.time_range = TimeRanges.objects.get(id=id)
             restaurant.save()
+
+    def get_other_lang_of_tags(self):
+        restaurants = dict(json.loads(self.translations))
+        for tag in self.tags.all():
+            for code, id in json.loads(tag.translations):
+                restaurant = Restaurants.objects.get(id=restaurants[code])
+                restaurant.tags.add(Tags.objects.get(id=id))
+                restaurant.save()
 
     def save(self, *args, **kwargs):
 
@@ -120,7 +161,7 @@ class Categories(azt_models.AztLocaleModel, models.Model):
     id = models.CharField(max_length=8, primary_key=True, unique=True, null=False)
     name = models.CharField(max_length=100, null=False, blank=False, )
     restaurant = models.ForeignKey(Restaurants, on_delete=models.CASCADE, related_name="categories")
-    slug = models.CharField(max_length=100, null=False, unique=True,)
+    slug = models.CharField(max_length=100, null=False, unique=True, blank=True)
     index = models.PositiveIntegerField(blank=True, validators=[MinValueValidator(1)], )
     locale = models.ForeignKey('Locale', on_delete=models.CASCADE, related_name="categories", )
     translations = models.CharField(max_length=1000, blank=True)
@@ -160,7 +201,7 @@ class Categories(azt_models.AztLocaleModel, models.Model):
         ordering = ['-date_of_update']
 
 
-class Food(azt_models.AztLocaleModel, models.Model):
+class Products(azt_models.AztLocaleModel, models.Model):
     SPECIAL_O2M_FIELDS = ['category']
     TRANSLATED_FIELDS = ['name', 'description']
     GENERAL_FIELDS = ['price', 'index', 'image', 'translations']
@@ -169,12 +210,12 @@ class Food(azt_models.AztLocaleModel, models.Model):
     name = models.CharField(max_length=100, null=False, blank=False,)
     description = models.TextField(null=False)
     image = models.ImageField(upload_to="images/food/")
-    slug = models.CharField(max_length=100, null=False, unique=True,)
+    slug = models.CharField(max_length=100, null=False, unique=True, blank=True)
     price = models.DecimalField(max_digits=16, decimal_places=2, null=True, blank=True,
                                 validators=[MinValueValidator(0)], default=0)
-    category = models.ForeignKey(Categories, on_delete=models.CASCADE, related_name="food")
+    category = models.ForeignKey(Categories, on_delete=models.CASCADE, related_name="products")
     index = models.PositiveIntegerField(blank=True, validators=[MinValueValidator(1)], )
-    locale = models.ForeignKey('Locale', on_delete=models.CASCADE, related_name="food", )
+    locale = models.ForeignKey('Locale', on_delete=models.CASCADE, related_name="products", )
     translations = models.CharField(max_length=1000, blank=True)
     date_of_update = models.DateTimeField(auto_now=True)
     date_of_add = models.DateTimeField(auto_now_add=True)
@@ -190,16 +231,16 @@ class Food(azt_models.AztLocaleModel, models.Model):
             self.id = azt_functions.set_id()
             self.slug = azt_functions.gen_slug(self.name)[0:100]
 
-        super(Food, self).save(*args, **kwargs)
+        super(Products, self).save(*args, **kwargs)
 
         self.set_translations()
 
     def get_other_lang_of_categories(self):
-        food = dict(json.loads(self.translations))
+        product = dict(json.loads(self.translations))
         for code, id in json.loads(self.category.translations):
-            fd = Food.objects.get(id=food[code])
-            fd.category = Categories.objects.get(id=id)
-            fd.save()
+            pr = Products.objects.get(id=product[code])
+            pr.category = Categories.objects.get(id=id)
+            pr.save()
 
     def set_index(self):
         if not self.index and self.__class__.objects.last():
@@ -208,7 +249,7 @@ class Food(azt_models.AztLocaleModel, models.Model):
             self.index = 1
 
     class Meta:
-        verbose_name_plural = "Food"
+        verbose_name_plural = "Products"
         ordering = ['-date_of_update']
 
 

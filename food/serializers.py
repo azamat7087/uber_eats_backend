@@ -46,15 +46,15 @@ class TimeRangeSerializer(AztLocaleSerializerMixin):
         exclude = ("date_of_add", "date_of_update", "locale", "translations", "id")
 
 
-class FoodListSerializer(AztLocaleSerializerMixin):
+class ProductsListSerializer(AztLocaleSerializerMixin):
     class Meta:
-        model = azt_models.Food
+        model = azt_models.Products
         fields = ("id", "name", "description", "slug", "index", "locale")
 
 
-class FoodSerializer(AztLocaleSerializerMixin, SlugMixin):
+class ProductsSerializer(AztLocaleSerializerMixin, SlugMixin):
     class Meta:
-        model = azt_models.Food
+        model = azt_models.Products
         exclude = ("id", "date_of_add", "date_of_update", )
 
 
@@ -65,16 +65,26 @@ class CategoriesListSerializer(AztLocaleSerializerMixin):
 
 
 class CategoriesSerializer(AztLocaleSerializerMixin, SlugMixin):
-    food = FoodListSerializer(many=True)
+    products = ProductsListSerializer(many=True)
 
     class Meta:
         model = azt_models.Categories
-        exclude = ("id", "date_of_add", "date_of_update", )
+        exclude = ("date_of_add", "date_of_update", )
+
+
+class TagsSerializer(AztLocaleSerializerMixin):
+    locale = None
+    translations = None
+
+    class Meta:
+        model = azt_models.Tags
+        exclude = ("locale", "translations", "date_of_add", "date_of_update",)
 
 
 class RestaurantsSerializer(AztLocaleSerializerMixin, SlugMixin):
     time_range = TimeRangeSerializer(many=False)
     categories = CategoriesListSerializer(many=True)
+    tags = TagsSerializer(many=True)
 
     class Meta:
         model = azt_models.Restaurants
@@ -83,9 +93,10 @@ class RestaurantsSerializer(AztLocaleSerializerMixin, SlugMixin):
 
 class RestaurantsListSerializer(AztLocaleSerializerMixin):
     time_range = TimeRangeSerializer(many=False)
+    tags = TagsSerializer(many=True)
 
     class Meta:
         model = azt_models.Restaurants
-        fields = ("id", "name", "slug", "time_range", "card_image", "index", "locale", "translations")
+        fields = ("id", "name", "slug", "tags", "time_range", "card_image", "index", "locale", "translations")
 
 

@@ -10,7 +10,10 @@ class LanguageFilterSet(FilterSet):
 
 
 class RestaurantsFilterSet(LanguageFilterSet):
-    pass
+    tag = CharFilter(field_name="tags__id")
+
+    class Meta:
+        fields = ['tag']
 
 
 class CategoriesFilterSet(LanguageFilterSet):
@@ -19,3 +22,10 @@ class CategoriesFilterSet(LanguageFilterSet):
     class Meta:
         fields = ['restaurant']
 
+
+class ProductsFilterSet(LanguageFilterSet):
+    category = CharFilter(field_name="category__id")
+    restaurant = CharFilter(field_name="category__restaurant__id")
+
+    class Meta:
+        fields = ['category', 'restaurant']

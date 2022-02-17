@@ -34,6 +34,21 @@ class TimeRangesAdmin(azt_admin_utils.MultiLangAdmin):
 admin.site.register(azt_models.TimeRanges, TimeRangesAdmin)
 
 
+class TagsAdmin(azt_admin_utils.MultiLangAdmin):
+
+    list_display = ('id', 'name', 'locale', 'date_of_update', 'date_of_add')
+    search_fields = ('id', 'name')
+    readonly_fields = ('id', 'date_of_update', 'date_of_add', 'translations')
+    ordering = ('-date_of_update',)
+    filter_horizontal = ()
+    autocomplete_fields = ()
+    list_filter = ('locale', )
+    fieldsets = ()
+
+
+admin.site.register(azt_models.Tags, TagsAdmin)
+
+
 class RestaurantsAdmin(azt_admin_utils.MultiLangAdmin):
 
     list_display = ('id', 'name', 'index', 'locale', 'date_of_update', 'date_of_add')
@@ -51,6 +66,7 @@ class RestaurantsAdmin(azt_admin_utils.MultiLangAdmin):
         old_object = cls.objects.get(id=form.instance.id)
         azt_functions.copy_m2m_fields(old_object, cls)
         old_object.get_other_lang_of_time_ranges()
+        old_object.get_other_lang_of_tags()
 
 
 admin.site.register(azt_models.Restaurants, RestaurantsAdmin)
@@ -78,7 +94,7 @@ class CategoriesAdmin(azt_admin_utils.MultiLangAdmin):
 admin.site.register(azt_models.Categories, CategoriesAdmin)
 
 
-class FoodAdmin(azt_admin_utils.MultiLangAdmin):
+class ProductsAdmin(azt_admin_utils.MultiLangAdmin):
 
     list_display = ('id', 'name', 'description', 'price', 'category', 'index', 'locale', 'date_of_update', 'date_of_add')
     search_fields = ('id', 'name',)
@@ -90,13 +106,10 @@ class FoodAdmin(azt_admin_utils.MultiLangAdmin):
     fieldsets = ()
 
     def save_related(self, request, form, formsets, change):
-        super(FoodAdmin, self).save_related(request, form, formsets, change)
-        cls = azt_models.Food
+        super(ProductsAdmin, self).save_related(request, form, formsets, change)
+        cls = azt_models.Products
         old_object = cls.objects.get(id=form.instance.id)
         azt_functions.copy_m2m_fields(old_object, cls)
         old_object.get_other_lang_of_categories()
 
-admin.site.register(azt_models.Food, FoodAdmin)
-
-
-
+admin.site.register(azt_models.Products, ProductsAdmin)

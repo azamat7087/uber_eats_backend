@@ -9,4 +9,6 @@ urlpatterns = [
     path('categories/', azt_views.CategoriesView.as_view({'get': 'list'}), name="categories_view"),
     path('categories/<str:id>/', azt_views.CategoriesView.as_view({'get': 'retrieve'}), name="category_view"),
 
+    path('products/', azt_views.ProductsView.as_view({'get': 'list'}), name="products_view"),
+    path('products/<str:id>/', azt_views.ProductsView.as_view({'get': 'retrieve'}), name="product_view"),
 ]

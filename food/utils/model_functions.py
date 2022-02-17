@@ -52,7 +52,7 @@ def set_lang_versions(obj, cls, attrs_list):
         new_obj = cls.objects.get(id=obj.id)
         new_obj.id = set_id()
         if hasattr(new_obj, "slug"):
-            new_obj.slug = gen_slug(new_obj.title)
+            new_obj.slug = gen_slug(new_obj.name)
         new_obj.locale = lang
         for field in cls._meta.get_fields():
             if (field.name in attrs_list) and (field.name not in cls.SPECIAL_O2M_FIELDS):

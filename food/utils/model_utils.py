@@ -86,7 +86,8 @@ class AztLocaleModel:
                                             self.TRANSLATED_FIELDS)
 
     def set_index(self):
-        if not self.index and self.__class__.objects.filter(locale=self.locale).last():
-            self.index = self.__class__.objects.filter(locale=self.locale).order_by('-index').first().index + 1
-        elif not self.__class__.objects.last():
-            self.index = 1
+        if hasattr(self, "index"):
+            if not self.index and self.__class__.objects.filter(locale=self.locale).last():
+                self.index = self.__class__.objects.filter(locale=self.locale).order_by('-index').first().index + 1
+            elif not self.__class__.objects.last():
+                self.index = 1
