@@ -144,13 +144,13 @@ class Restaurants(azt_models.AztLocaleModel, models.Model):
 
     def set_index(self):
         if not self.index and self.__class__.objects.last():
-            self.index = self.__class__.objects.first().index + 1
+            self.index = self.__class__.objects.last().index + 1
         elif not self.__class__.objects.last():
             self.index = 1
 
     class Meta:
         verbose_name_plural = "Restaurants"
-        ordering = ['-date_of_update']
+        ordering = ['date_of_update']
 
 
 class Categories(azt_models.AztLocaleModel, models.Model):
@@ -192,13 +192,13 @@ class Categories(azt_models.AztLocaleModel, models.Model):
 
     def set_index(self):
         if not self.index and self.__class__.objects.last():
-            self.index = self.__class__.objects.first().index + 1
+            self.index = self.__class__.objects.last().index + 1
         elif not self.__class__.objects.last():
             self.index = 1
 
     class Meta:
         verbose_name_plural = "Categories"
-        ordering = ['-date_of_update']
+        ordering = ['date_of_update']
 
 
 class Products(azt_models.AztLocaleModel, models.Model):
@@ -244,13 +244,13 @@ class Products(azt_models.AztLocaleModel, models.Model):
 
     def set_index(self):
         if not self.index and self.__class__.objects.last():
-            self.index = self.__class__.objects.first().index + 1
+            self.index = self.__class__.objects.last().index + 1
         elif not self.__class__.objects.last():
             self.index = 1
 
     class Meta:
         verbose_name_plural = "Products"
-        ordering = ['-date_of_update']
+        ordering = ['date_of_update']
 
 
 """
