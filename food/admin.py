@@ -79,7 +79,7 @@ class CategoriesAdmin(azt_admin_utils.MultiLangAdmin):
     readonly_fields = ('id', 'date_of_update', 'date_of_add', 'translations')
     ordering = ('-date_of_update',)
     filter_horizontal = ()
-    autocomplete_fields = ('restaurant',)
+    autocomplete_fields = ()
     list_filter = ('locale', 'restaurant')
     fieldsets = ()
 
@@ -101,7 +101,7 @@ class ProductsAdmin(azt_admin_utils.MultiLangAdmin):
     readonly_fields = ('id', 'date_of_update', 'date_of_add', 'translations')
     ordering = ('-date_of_update',)
     filter_horizontal = ()
-    autocomplete_fields = ('category', )
+    autocomplete_fields = ( )
     list_filter = ('locale', 'category', 'category__restaurant')
     fieldsets = ()
 
