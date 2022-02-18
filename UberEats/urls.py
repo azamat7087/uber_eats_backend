@@ -40,6 +40,9 @@ urlpatterns = [
 
 ]
 
+"""
+    Исправить индексы и сортировку
+"""
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
