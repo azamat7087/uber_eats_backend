@@ -49,7 +49,7 @@ class TimeRangeSerializer(AztLocaleSerializerMixin):
 class ProductsListSerializer(AztLocaleSerializerMixin):
     class Meta:
         model = azt_models.Products
-        fields = ("id", "name", "description", "slug", "index", "locale")
+        fields = ("id", "image", "name", "description", "slug", "index", "locale")
 
 
 class ProductsSerializer(AztLocaleSerializerMixin, SlugMixin):
