@@ -101,7 +101,7 @@ class Restaurants(azt_models.AztLocaleModel, models.Model):
     GENERAL_FIELDS = ['main_image', 'index', 'card_image', 'translations']
 
     id = models.CharField(max_length=8, primary_key=True, unique=True, null=False)
-    name = models.CharField(max_length=100, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=100, null=False, blank=False,)
     slug = models.CharField(max_length=100, null=False, unique=True, blank=True)
     tags = models.ManyToManyField(Tags, blank=True, related_name="restaurants")
     main_image = models.ImageField(upload_to="images/restaurants/main/", null=True)
@@ -151,6 +151,7 @@ class Restaurants(azt_models.AztLocaleModel, models.Model):
     class Meta:
         verbose_name_plural = "Restaurants"
         ordering = ['date_of_update']
+        unique_together = ['name', 'locale']
 
 
 class Categories(azt_models.AztLocaleModel, models.Model):
